@@ -26,7 +26,35 @@ if uploaded_file is not None:
     file_name = uploaded_file.name
 
     # Read file
-    if file_name.endswith('.csv'):
+    if file_name.endswith(".csv"):
         df = pd.read_csv(uploaded_file)
     else:
-        df = pd.read_excel(uploaded_file,
+        df = pd.read_excel(uploaded_file, engine="openpyxl")
+
+    # Ensure datetime index
+    if not isinstance(df.index, pd.DatetimeIndex):
+        if "Timestamp" in df.columns:  # if a timestamp column exists
+            df["Timestamp"] = pd.to_datetime(df["Timestamp"], errors="coerce")
+            df = df.set_index("Timestamp")
+        else:
+            st.error("No Timestamp column found. Please include one in your data.")
+            st.stop()
+
+    # Date filter
+    start_date = st.date_input("Start Date", value=df.index.min().date())
+    end_date = st.date_input("End Date", value=df.index.max().date())
+    df = df.loc[str(start_date):str(end_date)]
+
+    # Fixed time filter (07:00–19:00)
+    df = df.between_time("07:00", "19:00")
+
+    # Processing
+    result = process_file(df)
+
+    # Plot heatmap
+    st.subheader("Heatmap of String Current Comparison")
+    plot_heatmap(result)
+
+    # Preview processed data
+    st.subheader("Preview of Processed Data")
+    st.dataframe(result.head())
