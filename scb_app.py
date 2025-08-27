@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
 
 st.title("SCB Data Analyzer")
@@ -13,11 +12,18 @@ def process_file(df):
     comparison = df[string_cols].div(df["Expected_Current"], axis=0)
     return comparison
 
-# Function to plot heatmap
+# Function to plot heatmap with matplotlib
 def plot_heatmap(result):
-    plt.figure(figsize=(12, 6))
-    sns.heatmap(result, cmap="coolwarm", cbar=True)
-    st.pyplot(plt)
+    fig, ax = plt.subplots(figsize=(12, 6))
+    cax = ax.matshow(result.T, cmap="coolwarm", aspect="auto")
+    fig.colorbar(cax)
+
+    ax.set_xticks(range(len(result.index)))
+    ax.set_xticklabels(result.index.strftime("%H:%M"), rotation=90, fontsize=8)
+    ax.set_yticks(range(len(result.columns)))
+    ax.set_yticklabels(result.columns, fontsize=8)
+
+    st.pyplot(fig)
 
 # File uploader
 uploaded_file = st.file_uploader("Upload Excel or CSV file", type=["xlsx", "csv"])
@@ -41,20 +47,4 @@ if uploaded_file is not None:
             st.stop()
 
     # Date filter
-    start_date = st.date_input("Start Date", value=df.index.min().date())
-    end_date = st.date_input("End Date", value=df.index.max().date())
-    df = df.loc[str(start_date):str(end_date)]
-
-    # Fixed time filter (07:00–19:00)
-    df = df.between_time("07:00", "19:00")
-
-    # Processing
-    result = process_file(df)
-
-    # Plot heatmap
-    st.subheader("Heatmap of String Current Comparison")
-    plot_heatmap(result)
-
-    # Preview processed data
-    st.subheader("Preview of Processed Data")
-    st.dataframe(result.head())
+    start_date = st.date_input("Start Date", value=df.inde
