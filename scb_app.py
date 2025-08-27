@@ -77,14 +77,15 @@ def daily_summary(df):
 # -------- Streamlit UI --------
 st.title("SCB String Current Analysis Tool")
 
-file = st.file_uploader("Upload Excel file (with fixed format)", type=["xlsx"])
-if file:
-    file_name = uploaded_file.name
+uploaded_file = st.file_uploader("Upload Excel/CSV file (with fixed format)", type=["xlsx", "csv"])
 
-if file_name.endswith('.csv'):
-    df = pd.read_csv(uploaded_file)
-else:
-    df = pd.read_excel(uploaded_file, engine="openpyxl")
+if uploaded_file is not None:
+    file_name = uploaded_file.name   # ✅ get filename
+
+    if file_name.endswith('.csv'):
+        df = pd.read_csv(uploaded_file)
+    else:
+        df = pd.read_excel(uploaded_file, engine="openpyxl")
 
     result = process_file(df)
 
@@ -104,5 +105,6 @@ else:
 
     csv2 = summary.to_csv(index=False).encode("utf-8")
     st.download_button("Download Daily Summary", csv2, "daily_summary.csv", "text/csv")
+
 
 
