@@ -47,4 +47,5 @@ if uploaded_file is not None:
             st.stop()
 
     # Date filter
-    start_date = st.date_input("Start Date", value=df.inde
+    start_date = st.date_input("Start Date"), value=df.inde
+
