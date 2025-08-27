@@ -82,6 +82,20 @@ if file:
     df = pd.read_excel(file, engine="openpyxl")
     result = process_file(df)
 
+    # ---- Time Selection ----
+    min_time = result.index.min()
+    max_time = result.index.max()
+    start_time, end_time = st.slider(
+        "Select Time Range",
+        min_value=min_time.to_pydatetime(),
+        max_value=max_time.to_pydatetime(),
+        value=(min_time.to_pydatetime(), max_time.to_pydatetime()),
+        format="MM-DD HH:mm"
+    )
+
+    # Filter by selected time
+    result = result.loc[start_time:end_time]
+
     st.subheader("Preview of Processed Data")
     st.dataframe(result.head(20))
 
