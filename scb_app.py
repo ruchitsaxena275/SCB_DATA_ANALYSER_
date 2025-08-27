@@ -96,26 +96,20 @@ end_date   = st.date_input("End Date", value=df.index.max().date())
 # --- filter the dataframe ---
 df = df.loc[str(start_date):str(end_date)]
 df = df.between_time("07:00", "19:00")
-
-
     result = process_file(df)
-
-    st.subheader("Preview of Processed Data")
+ st.subheader("Preview of Processed Data")
     st.dataframe(result.head(20))
-
     st.subheader("Heatmap of Current Ratio (CR)")
     plot_heatmap(result)
-
     st.subheader("Daily Summary of Weak Strings")
     summary = daily_summary(result)
     st.dataframe(summary)
-
     # Download buttons
     csv = result.reset_index().to_csv(index=False).encode("utf-8")
     st.download_button("Download Processed CSV", csv, "processed_data.csv", "text/csv")
-
     csv2 = summary.to_csv(index=False).encode("utf-8")
     st.download_button("Download Daily Summary", csv2, "daily_summary.csv", "text/csv")
+
 
 
 
