@@ -79,7 +79,15 @@ st.title("SCB String Current Analysis Tool")
 
 file = st.file_uploader("Upload Excel file (with fixed format)", type=["xlsx"])
 if file:
-    df = pd.read_excel(file, engine="openpyxl")
+    import os
+
+file_name = uploaded_file.name
+
+if file_name.endswith('.csv'):
+    df = pd.read_csv(uploaded_file)
+else:
+    df = pd.read_excel(uploaded_file)
+(file, engine="openpyxl")
     result = process_file(df)
 
     st.subheader("Preview of Processed Data")
@@ -98,3 +106,4 @@ if file:
 
     csv2 = summary.to_csv(index=False).encode("utf-8")
     st.download_button("Download Daily Summary", csv2, "daily_summary.csv", "text/csv")
+
