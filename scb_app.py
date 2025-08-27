@@ -86,6 +86,17 @@ if uploaded_file is not None:
         df = pd.read_csv(uploaded_file)
     else:
         df = pd.read_excel(uploaded_file, engine="openpyxl")
+        # --- ensure datetime index ---
+df.index = pd.to_datetime(df.index, errors="coerce")
+
+# --- add Streamlit date pickers ---
+start_date = st.date_input("Start Date", value=df.index.min().date())
+end_date   = st.date_input("End Date", value=df.index.max().date())
+
+# --- filter the dataframe ---
+df = df.loc[str(start_date):str(end_date)]
+df = df.between_time("07:00", "19:00")
+
 
     result = process_file(df)
 
@@ -105,6 +116,7 @@ if uploaded_file is not None:
 
     csv2 = summary.to_csv(index=False).encode("utf-8")
     st.download_button("Download Daily Summary", csv2, "daily_summary.csv", "text/csv")
+
 
 
 
