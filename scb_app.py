@@ -47,5 +47,9 @@ if uploaded_file is not None:
             st.stop()
 
     # Date filter
-    start_date = st.date_input("Start Date"), value=df.inde
+start_date = st.date_input("Start Date", value=df.index.min().date())
+end_date = st.date_input("End Date", value=df.index.max().date())
+df = df.loc[str(start_date):str(end_date)]
+
+
 
